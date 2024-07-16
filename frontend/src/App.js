@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getDishes, togglePublishStatus } from './api';
 import { subscribeToUpdates } from './ws';
 import Dish from './Dish';
+import './App.css';
 
 function App() {
   const [dishes, setDishes] = useState([]);
@@ -35,9 +36,9 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>Dish Dashboard</h1>
-      <div>
+    <div className="app-container">
+      <h1 className="title">Dish Dashboard</h1>
+      <div className="dishes-container">
         {dishes.map((dish) => (
           <Dish key={dish.dishId} dish={dish} onTogglePublish={handleTogglePublish} />
         ))}
