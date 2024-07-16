@@ -1,23 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import { getDishes, togglePublishStatus } from './api';
+import { subscribeToUpdates } from './ws';
+import Dish from './Dish';
 
 function App() {
+  const [dishes, setDishes] = useState([]);
+
+  useEffect(() => {
+    fetchDishes();
+
+    const handleUpdate = (updatedDish) => {
+      setDishes((prevDishes) =>
+        prevDishes.map((dish) =>
+          dish.dishId === updatedDish.dishId ? updatedDish : dish
+        )
+      );
+    };
+
+    subscribeToUpdates(handleUpdate);
+  }, []);
+
+  const fetchDishes = async () => {
+    const data = await getDishes();
+    setDishes(data);
+  };
+
+  const handleTogglePublish = async (dishId) => {
+    const updatedDish = await togglePublishStatus(dishId);
+    setDishes((prevDishes) =>
+      prevDishes.map((dish) =>
+        dish.dishId === updatedDish.dishId ? updatedDish : dish
+      )
+    );
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Dish Dashboard</h1>
+      <div>
+        {dishes.map((dish) => (
+          <Dish key={dish.dishId} dish={dish} onTogglePublish={handleTogglePublish} />
+        ))}
+      </div>
     </div>
   );
 }
